@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#14061f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pumpkin Smash</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- painted backdrop: visible from the very first paint, before WebGL is up -->
+<div id="paint"><div class="moon"></div><div class="fogp"></div></div>
+<canvas id="gl"></canvas>
+<canvas id="fx2d"></canvas>
+<div id="flash"></div>
+<div id="vignette"></div>
+
+<div id="hud" class="hidden">
+  <div class="hud-left glass">
+    <div class="lbl" data-i18n="score">Score</div>
+    <div id="score">0</div>
+    <div id="mult" class="hidden">x2 <span id="multT"></span></div>
+  </div>
+  <div class="hud-mid">
+    <div id="timerWrap" class="glass"><svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="44"/><circle id="timerRing" class="ring" cx="50" cy="50" r="44"/></svg><div id="timer">60</div></div>
+    <div id="bossBar" class="hidden"><div class="bname" data-i18n="bossName">GIANT PUMPKIN</div><div class="btrack"><div id="bossFill"></div></div></div>
+  </div>
+  <div class="hud-right">
+    <button id="btnMute" class="icon glass" aria-label="Mute">🔊</button>
+    <button id="btnPause" class="icon glass" aria-label="Pause">⏸</button>
+  </div>
+</div>
+<div id="combo"></div>
+<div id="banner"></div>
+
+<div id="start" class="screen">
+  <div class="titleBlock">
+    <div class="kicker" data-i18n="kicker">A 60-second Halloween frenzy</div>
+    <h1 class="title"><span class="t1">PUMPKIN</span><span class="t2">SMASH</span></h1>
+    <div class="tag" data-i18n="tag">Swipe through the fog. Smash the pumpkins. Beat the giant.</div>
+  </div>
+  <div class="startCard glass">
+    <button id="btnPlay" class="big"><span data-i18n="play">PLAY</span></button>
+    <div class="how" data-i18n-html="how">🎃 Swipe or click pumpkins &nbsp;·&nbsp; 👻 Ghosts = bonus &nbsp;·&nbsp; 💣 Avoid skull bombs</div>
+    <div class="row">
+      <label class="pill"><input type="checkbox" id="chkKids"><span data-i18n="kids">Kids mode</span></label>
+      <div class="seg" id="langSeg"><button data-lang="en">EN</button><button data-lang="de">DE</button></div>
+      <button id="btnSettings" class="pill" data-i18n="settings">⚙ Settings</button>
+    </div>
+    <div class="best"><span data-i18n="best">Best</span>: <b id="bestStart">0</b></div>
+  </div>
+</div>
+
+<div id="settings" class="modal hidden">
+  <div class="glass panel">
+    <h2 data-i18n="settingsT">Settings</h2>
+    <div class="field"><span data-i18n="quality">Quality</span>
+      <div class="seg" id="qualSeg"><button data-q="low" data-i18n="q_low">Low</button><button data-q="mid" data-i18n="q_mid">Medium</button><button data-q="high" data-i18n="q_high">High</button><button data-q="ultra">Ultra</button></div>
+    </div>
+    <div class="hint" id="qualHint"></div>
+    <div class="field"><span data-i18n="music">Music</span><input type="range" id="volMusic" min="0" max="100" value="60"></div>
+    <div class="field"><span data-i18n="sfx">Sound effects</span><input type="range" id="volSfx" min="0" max="100" value="90"></div>
+    <div class="field"><label class="pill"><input type="checkbox" id="chkMute"><span data-i18n="mute">Mute all</span></label>
+      <label class="pill"><input type="checkbox" id="chkKids2"><span data-i18n="kids">Kids mode</span></label></div>
+    <button id="btnCloseSettings" class="mid" data-i18n="close">Done</button>
+  </div>
+</div>
+
+<div id="pauseScr" class="modal hidden"><div class="glass panel"><h2 data-i18n="paused">Paused</h2><button id="btnResume" class="big" data-i18n="resume">RESUME</button><button id="btnQuit" class="mid" data-i18n="quit">Quit round</button></div></div>
+
+<div id="end" class="screen hidden">
+  <div id="endCard" class="glass">
+    <div class="endTitle" data-i18n="endTitle">ROUND OVER</div>
+    <div id="endScore">0</div>
+    <div id="newBest" class="hidden" data-i18n="newBest">NEW BEST!</div>
+    <div id="rank"></div>
+    <div class="stats">
+      <div><b id="stSmash">0</b><span data-i18n="stSmash">pumpkins</span></div>
+      <div><b id="stCombo">x0</b><span data-i18n="stCombo">best combo</span></div>
+      <div><b id="stBoss">—</b><span data-i18n="stBoss">boss</span></div>
+      <div><b id="stBest">0</b><span data-i18n="best">Best</span></div>
+    </div>
+    <div class="nameRow"><span data-i18n="name">Name</span><input id="name" maxlength="18" value="Frank" autocomplete="off"></div>
+    <div class="shareBox">
+      <div class="shareHead"><span data-i18n="shareT">Share text</span><div class="seg small" id="shareLang"><button data-sl="en">EN</button><button data-sl="de">DE</button></div></div>
+      <div id="shareText"></div>
+    </div>
+    <div class="btns">
+      <button id="btnShare" class="mid">📋 <span data-i18n="share">Copy share text</span></button>
+      <button id="btnShot" class="mid">📸 <span data-i18n="shot">Save screenshot</span></button>
+      <button id="btnReplay" class="big">↻ <span data-i18n="replay">PLAY AGAIN</span></button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="js/sounds-src.js"></script>
+<script src="js/game.bundle.js"></script>
+</body>
+</html>
