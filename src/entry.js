@@ -9,6 +9,7 @@ import { makeFaceMaterial, makePumpkin, makeGhost, makeBomb, makeSleepyCat, make
 import * as FX from './fx.js';
 import * as A from './audio.js';
 import { T, setLang, getLang, applyI18n, rankFor, shareText, fmt } from './i18n.js';
+const defName = () => (getLang() === 'de' ? 'Spieler' : 'Player');
 
 const $ = id => document.getElementById(id);
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -22,7 +23,7 @@ const S = {
   state: 'attract', kids: store.get('ps-kids', '0') === '1', quality: store.get('ps-quality', ''), qualityUser: !!store.get('ps-quality', ''),
   score: 0, timeLeft: 60, elapsed: 0, mult: 1, multT: 0, smashed: 0, bestCombo: 0, chain: 0, lastHitT: -9, chainPts: 0, chainPos: null,
   boss: null, bossSpawned: false, bossKilled: false, timeScale: 1, slowT: 0, best: +store.get('ps-best', '0') || 0,
-  spawnT: 0.4, ghostT: 9, ghostKind: 'time', tickNext: 5, queue: [], demoT: 0.6, nameV: store.get('ps-name', 'Frank'), shareLang: getLang(), paused: false, clock: 0
+  spawnT: 0.4, ghostT: 9, ghostKind: 'time', tickNext: 5, queue: [], demoT: 0.6, nameV: store.get('ps-name', defName()), shareLang: getLang(), paused: false, clock: 0
 };
 if (!QUALITY[S.quality]) S.quality = '';
 
@@ -422,7 +423,7 @@ function showEnd() {
   $('name').value = S.nameV;
   updateShare();
 }
-function result() { return { name: ($('name').value || 'Frank').trim(), score: S.score, smashed: S.smashed, bestCombo: S.bestCombo, bossKilled: S.bossKilled }; }
+function result() { return { name: ($('name').value || defName()).trim(), score: S.score, smashed: S.smashed, bestCombo: S.bestCombo, bossKilled: S.bossKilled }; }
 function updateShare() {
   $('shareText').textContent = shareText(result(), S.shareLang);
   document.querySelectorAll('#shareLang button').forEach(b => b.classList.toggle('on', b.dataset.sl === S.shareLang));
